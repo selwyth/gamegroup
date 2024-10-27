@@ -50,6 +50,7 @@ try:
 except:
     st.warning("Unable to load cache. Try refreshing the cache?")
 
+st.subheader("Most Want to Play")
 col1, col2 = st.columns(2)
 OWNED_IS_WTP = col1.checkbox("Treat Owned as Want-to-Play?", value=True)
 WANT_IS_WTP = col2.checkbox("Treat Wishlist/Preordered as Want-to-Play?", value=True)
@@ -112,3 +113,25 @@ s = wtp_summary.style.apply(
 )
 
 st.data_editor(s)
+
+st.subheader("Ratings")
+r = (
+    df.groupby(["gameid", "user"])["rating"]
+    .max()
+    .unstack()
+    .fillna(df.groupby("user")["rating"].mean())
+    .mean(1)
+)
+r.name = "adjusted_rating"
+
+s = df.groupby("gameid").agg(
+    boardgame = ("boardgame", pd.Series.mode),
+    raw_rating = ("rating", "mean"),
+    num_ratings = ("rating", "count"),
+).join(r)
+st.data_editor(s.sort_values("adjusted_rating", ascending=False),
+               column_config={
+                   "raw_rating": st.column_config.NumberColumn("Avg Rating", format="%.2f"),
+                   "num_ratings": st.column_config.NumberColumn("# Raters"),
+                   "adjusted_rating": st.column_config.NumberColumn("Adj. Rating", format="%.2f"),
+               })
