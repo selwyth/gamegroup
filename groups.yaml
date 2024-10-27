@@ -1,34 +1,95 @@
 Bay Area Wargamers:
   users:
-    - selwyth
-    - davekohr
-    - jessefromsf
-    - allenthar
-    - andyhre
-    - natyh
-    - bishop026
+    - selwyth:
+        name: David F
+    - davekohr:
+        name: Dave K
+    - jessefromsf:
+        name: Jesse S
+    - allenthar:
+        name: Luke S
+    - andyhre:
+        name: Andy S
+    - natyh:
+        name: Naty H
+    - bishop026:
+        name: Shannon M
+    - mailajain:
+        name: Ameet
   connection: baw
+  user_display_fields:
+    - name
 
 Oaklandish Board Gamers:
   users:
-    - airguitarbandit
-    - andyhre
-    - Arkadians19
-    - bfrizb
-    - Dhivya
-    - garfieldmadness
-    - laurie1020
-    - Nerdetritus
-    - nhdale86
-    - playtheshovels
-    - randyzero
-    - sahilrhapar
-    - Scamp
-    - selwyth
-    - shawgo
-    - shockway
-    - SirHandsome
-    - Squidcannon
-    - Tabletopgrl
-    - zspencer
+    - airguitarbandit:
+        discord: airguitarbandit
+        name: steve
+    - andyhre:
+        discord: andyhre
+        name: Andy S
+    - arienmalec:
+        discord: hflower
+        name: Arien M
+    - Arkadians19:
+        discord: arka19
+        name: Arka
+    - bfrizb:
+        discord: bfrizb
+        name: Brian
+    - Dhivya:
+        discord: dhivya7323
+        name: Dhivya
+    - garfieldmadness:
+        discord: amazin_asian
+        name: Jonathan C
+    - Festina_Val:
+        discord: festina.vmh
+        name: Val
+        remote: True
+    - laurie1020:
+        discord: tenpastten
+        name: Laurie
+    - Nerdetritus:
+        discord: nerdetritus
+        name: Nick H (Nerdetritus)
+    - nhdale86:
+        discord: nhdale86
+        name: Hollis
+    - playtheshovels:
+        discord: playtheshovels
+        name: Nick H (playtheshovels)
+    - randyzero:
+        discord: randyo
+        name: Randy O
+    - sahilrhapar:
+        discord: asphalthair
+        name: Sahil
+    - Scamp:
+        discord: scamp
+        name: David C
+    - selwyth:
+        discord: selwyth
+        name: David F
+    - shawgo:
+        discord: shawgdawg
+        name: Daniel
+    - shockway:
+        discord: shock408
+        name: Moises M
+    - SirHandsome:
+        discord: sirhandsome
+        name: Kweku A
+    - Squidcannon:
+        discord: kellyporter
+        name: Kelly
+    - Tabletopgrl:
+        discord: tabletopgrl
+        name: Vera D
+    - zspencer:
+        discord: zeespencer
+        name: Zee S
   connection: obg
+  user_display_fields:
+    - name
+    - discord

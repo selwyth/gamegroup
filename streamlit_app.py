@@ -11,12 +11,15 @@ with open("groups.yaml", "r") as f:
     group_data = yaml.safe_load(f)
 
 GROUP = st.selectbox("Select group", options=group_data.keys())
+USER_DISPLAY_FIELD = st.selectbox("Choose how to display the user (default is BGG handle)",
+                                  [""] + group_data[GROUP]["user_display_fields"],
+                                  format_func=lambda x: x.title())
 conn = st.connection(group_data[GROUP]["connection"], type=GSheetsConnection)
 
-if st.button("Refresh the cache from BGG"):
+if st.button("Refresh the cached data from BGG -- use sparingly!"):
     bgg = BGGClient(retries=10, retry_delay=10)
     result = []
-    for user in group_data[GROUP]["users"]:
+    for user in group_data[GROUP]["users"].keys():
         with st.spinner(f"Refreshing {user}"):
             coll = bgg.collection(user)
             for game in coll:
@@ -67,17 +70,31 @@ df = df.assign(
         df.want_to_play_bool
         + (OWNED_IS_WTP * df.owned_bool)
         + (WANT_IS_WTP * (df.want_bool + df.wishlist_bool + df.preordered_bool + df.want_to_buy_bool))
+        + ((df.user == "selwyth") * (df.owned_bool))  # :)
     ).astype(int),
 )
 
-wtp_summary = df.groupby(["gameid"]).agg(
-    boardgame = ("boardgame", pd.Series.mode),
-    want_to_play = ("wtp", "sum"),
-    num_owners = ("owned", "sum"),
-).sort_values("want_to_play", ascending=False)
-wtp = df.loc[df.wtp == 1].groupby("gameid")["user"].apply(list)
+if USER_DISPLAY_FIELD != "":
+    mapping = {k:v[USER_DISPLAY_FIELD] for d in group_data[GROUP]["users"] for k, v in d.items()}
+    df[USER_DISPLAY_FIELD] = df.user.map(mapping)
+
+remote_mapping = {k:v.get("remote", False) for d in group_data[GROUP]["users"] for k, v in d.items()}
+df["remote"] = df.user.map(remote_mapping)
+
+wtp_summary = (
+    df.loc[~df.remote]
+    .groupby(["gameid"])
+    .agg(
+        boardgame = ("boardgame", pd.Series.mode),
+        want_to_play = ("wtp", "sum"),
+        num_owners = ("owned", "sum"),
+    )
+    .sort_values("want_to_play", ascending=False)
+)
+USER_DISPLAY_FIELD2 = "user" if USER_DISPLAY_FIELD == "" else USER_DISPLAY_FIELD
+wtp = df.loc[df.wtp == 1].groupby("gameid")[USER_DISPLAY_FIELD2].apply(list)
 wtp.name = "Who wants to play?"
-owners = df.loc[df.owned_bool].groupby("gameid")["user"].apply(list)
+owners = df.loc[df.owned_bool].groupby("gameid")[USER_DISPLAY_FIELD2].apply(list)
 owners.name = "Who owns?"
 wtp_summary = wtp_summary.join(wtp).join(owners)
 
