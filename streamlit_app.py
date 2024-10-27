@@ -19,7 +19,8 @@ conn = st.connection(group_data[GROUP]["connection"], type=GSheetsConnection)
 if st.button("Refresh the cached data from BGG -- use sparingly!"):
     bgg = BGGClient(retries=10, retry_delay=10)
     result = []
-    for user in group_data[GROUP]["users"].keys():
+    for u in group_data[GROUP]["users"]:
+        user = list(u.keys())[0]
         with st.spinner(f"Refreshing {user}"):
             coll = bgg.collection(user)
             for game in coll:
