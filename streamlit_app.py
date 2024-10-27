@@ -93,9 +93,9 @@ wtp_summary = (
     .sort_values("want_to_play", ascending=False)
 )
 USER_DISPLAY_FIELD2 = "user" if USER_DISPLAY_FIELD == "" else USER_DISPLAY_FIELD
-wtp = df.loc[df.wtp == 1].groupby("gameid")[USER_DISPLAY_FIELD2].apply(list)
+wtp = df.loc[(df.wtp == 1) & ~(df.remote)].groupby("gameid")[USER_DISPLAY_FIELD2].apply(list)
 wtp.name = "Who wants to play?"
-owners = df.loc[df.owned_bool].groupby("gameid")[USER_DISPLAY_FIELD2].apply(list)
+owners = df.loc[(df.owned_bool) & ~(df.remote)].groupby("gameid")[USER_DISPLAY_FIELD2].apply(list)
 owners.name = "Who owns?"
 wtp_summary = wtp_summary.join(wtp).join(owners)
 
