@@ -84,7 +84,7 @@ remote_mapping = {k:v.get("remote", False) for d in group_data[GROUP]["users"] f
 df["remote"] = df.user.map(remote_mapping)
 
 wtp_summary = (
-    df.loc[~df.remote]
+    df.loc[(~df.remote) & (df.wtp == 1)]
     .groupby(["gameid"])
     .agg(
         boardgame = ("boardgame", pd.Series.mode),
@@ -112,7 +112,9 @@ s = wtp_summary.style.apply(
     axis=1,
 )
 
-st.data_editor(s)
+st.data_editor(s, column_config={
+    "Who owns?": st.column_config.ListColumn("Who owns?")
+})
 
 st.subheader("Ratings")
 r = (
