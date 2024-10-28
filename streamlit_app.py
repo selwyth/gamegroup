@@ -65,6 +65,7 @@ bool_cols = [
     "wishlist",
 ]
 for bc in bool_cols:
+    df[bc] = df[bc].astype(int)  # sometimes the result is bool, sometimes it's int
     df[bc + "_bool"] = df[bc].astype(bool)
 
 df = df.assign(
@@ -82,9 +83,8 @@ if USER_DISPLAY_FIELD != "":
 
 remote_mapping = {k:v.get("remote", False) for d in group_data[GROUP]["users"] for k, v in d.items()}
 df["remote"] = df.user.map(remote_mapping)
-
 wtp_summary = (
-    df.loc[(~df.remote) & (df.wtp == 1)]
+    df.loc[~df.remote]
     .groupby(["gameid"])
     .agg(
         boardgame = ("boardgame", pd.Series.mode),
@@ -98,7 +98,7 @@ wtp = df.loc[(df.wtp == 1) & ~(df.remote)].groupby("gameid")[USER_DISPLAY_FIELD2
 wtp.name = "Who wants to play?"
 owners = df.loc[(df.owned_bool) & ~(df.remote)].groupby("gameid")[USER_DISPLAY_FIELD2].apply(list)
 owners.name = "Who owns?"
-wtp_summary = wtp_summary.join(wtp).join(owners)
+wtp_summary2 = wtp_summary.join(wtp).join(owners)
 
 def highlight_rows(s):
     con = s.copy()
@@ -107,7 +107,7 @@ def highlight_rows(s):
         con[:] = "background-color: salmon"
     return con
 
-s = wtp_summary.style.apply(
+s = wtp_summary2.style.apply(
     highlight_rows,
     axis=1,
 )
