@@ -1,21 +1,27 @@
 Bay Area Wargamers:
   users:
-    - selwyth:
-        name: David F
-    - davekohr:
-        name: Dave K
-    - jessefromsf:
-        name: Jesse S
     - allenthar:
         name: Luke S
     - andyhre:
         name: Andy S
+    - anjru:
+        name: Andrew T
+    - davekohr:
+        name: Dave K
+    - Graftware:
+        name: Tom C
+    - jessefromsf:
+        name: Jesse S
+    - mailajain:
+        name: Ameet
     - natyh:
         name: Naty H
     - bishop026:
         name: Shannon M
-    - mailajain:
-        name: Ameet
+    - selwyth:
+        name: David F
+    - TheOneTrueZeke:
+        name: Pete G
   connection: baw
   user_display_fields:
     - name
@@ -62,6 +68,9 @@ Oaklandish Board Gamers:
     - randyzero:
         discord: randyo
         name: Randy O
+    - Ruen270:
+        discord: nicknation23
+        name: Nick U
     - sahilrhapar:
         discord: asphalthair
         name: Sahil
