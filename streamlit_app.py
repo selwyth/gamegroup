@@ -137,3 +137,23 @@ st.data_editor(s.sort_values("adjusted_rating", ascending=False),
                    "num_ratings": st.column_config.NumberColumn("# Raters"),
                    "adjusted_rating": st.column_config.NumberColumn("Adj. Rating", format="%.2f"),
                })
+
+st.subheader("Trades")
+t = (
+    df.loc[~(df.remote) & (df.for_trade == 1)]
+    .groupby("gameid")
+    [USER_DISPLAY_FIELD2]
+    .apply(list)
+)
+t.name = "Who's Trading?"
+w = (
+    df.loc[~(df.remote) & (df.want == 1)]
+    .groupby("gameid")
+    [USER_DISPLAY_FIELD2]
+    .apply(list)
+)
+w.name = "Who Wants?"
+t2 = t.to_frame().join(w, how="inner")
+t2["boardgame"] = s["boardgame"]
+t2 = t2.loc[(t2["Who's Trading?"].notnull()) & (t2["Who Wants?"].notnull())]  # Covers edge case of no matches
+st.write(t2)
