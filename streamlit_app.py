@@ -100,19 +100,18 @@ owners = df.loc[(df.owned_bool) & ~(df.remote)].groupby("gameid")[USER_DISPLAY_F
 owners.name = "Who owns?"
 wtp_summary2 = wtp_summary.join(wtp).join(owners)
 
-def highlight_rows(s):
-    con = s.copy()
-    con[:] = None
-    if s["num_owners"] == 0:
-        con[:] = "background-color: salmon"
-    return con
+def highlight_row(row):
+    if row["num_owners"] == 0:
+        return ["background-color: salmon"] * len(row)
+    else:
+        return [""] * len(row)
 
 s = wtp_summary2.style.apply(
-    highlight_rows,
+    highlight_row,
     axis=1,
 )
 
-st.data_editor(s, column_config={
+st.dataframe(s, column_config={
     "Who owns?": st.column_config.ListColumn("Who owns?")
 })
 
@@ -156,4 +155,17 @@ w.name = "Who Wants?"
 t2 = t.to_frame().join(w, how="inner")
 t2["boardgame"] = s["boardgame"]
 t2 = t2.loc[(t2["Who's Trading?"].notnull()) & (t2["Who Wants?"].notnull())]  # Covers edge case of no matches
-st.write(t2)
+st.dataframe(t2.set_index("boardgame"))
+
+st.subheader("Most Wanted")
+w = (
+    df.loc[df.want == 1]
+      .groupby("gameid")
+      .agg(
+          boardgame = ("boardgame", pd.Series.mode),
+          num_wishlists = ("user", "nunique"),
+          who_wants = ("user", list),
+      )
+      .sort_values("num_wishlists", ascending=False)
+)
+st.dataframe(w.set_index("boardgame"), use_container_width=True)
