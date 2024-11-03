@@ -4,6 +4,7 @@ import streamlit as st
 import yaml
 
 from boardgamegeek import BGGClient
+from boardgamegeek.cache import CacheBackendMemory
 from streamlit_gsheets import GSheetsConnection
 
 st.title("Game Group Analyzer")
@@ -17,7 +18,8 @@ USER_DISPLAY_FIELD = st.selectbox("Choose how to display the user (default is BG
 conn = st.connection(group_data[GROUP]["connection"], type=GSheetsConnection)
 
 if st.button("Refresh the cached data from BGG -- use sparingly!"):
-    bgg = BGGClient(retries=10, retry_delay=10)
+    bgg = BGGClient(cache=CacheBackendMemory(ttl=10),
+                    retries=10, retry_delay=10)
     result = []
     for u in group_data[GROUP]["users"]:
         user = list(u.keys())[0]
@@ -42,8 +44,6 @@ if st.button("Refresh the cached data from BGG -- use sparingly!"):
     df = pd.DataFrame(result)
     
     conn.update(worksheet="Sheet1", data=df)
-    st.cache_data.clear()
-    st.rerun()
 
 try:
     df = conn.read(worksheet="Sheet1")
