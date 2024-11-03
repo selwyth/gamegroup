@@ -111,7 +111,7 @@ s = wtp_summary2.style.apply(
     axis=1,
 )
 
-st.dataframe(s, column_config={
+st.data_editor(s, column_config={
     "Who owns?": st.column_config.ListColumn("Who owns?")
 })
 
@@ -131,11 +131,11 @@ s = df.groupby("gameid").agg(
     num_ratings = ("rating", "count"),
 ).join(r)
 st.data_editor(s.sort_values("adjusted_rating", ascending=False),
-               column_config={
-                   "raw_rating": st.column_config.NumberColumn("Avg Rating", format="%.2f"),
-                   "num_ratings": st.column_config.NumberColumn("# Raters"),
-                   "adjusted_rating": st.column_config.NumberColumn("Adj. Rating", format="%.2f"),
-               })
+             column_config={
+                 "raw_rating": st.column_config.NumberColumn("Avg Rating", format="%.2f"),
+                 "num_ratings": st.column_config.NumberColumn("# Raters"),
+                 "adjusted_rating": st.column_config.NumberColumn("Adj. Rating", format="%.2f"),
+             })
 
 st.subheader("Trades")
 t = (
@@ -155,7 +155,7 @@ w.name = "Who Wants?"
 t2 = t.to_frame().join(w, how="inner")
 t2["boardgame"] = s["boardgame"]
 t2 = t2.loc[(t2["Who's Trading?"].notnull()) & (t2["Who Wants?"].notnull())]  # Covers edge case of no matches
-st.dataframe(t2.set_index("boardgame"))
+st.data_editor(t2.set_index("boardgame"))
 
 st.subheader("Most Wanted")
 w = (
@@ -168,4 +168,4 @@ w = (
       )
       .sort_values("num_wishlists", ascending=False)
 )
-st.dataframe(w.set_index("boardgame"), use_container_width=True)
+st.data_editor(w.set_index("boardgame"), use_container_width=True)
