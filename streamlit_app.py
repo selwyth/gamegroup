@@ -15,6 +15,7 @@ GROUP = st.selectbox("Select group", options=group_data.keys())
 USER_DISPLAY_FIELD = st.selectbox("Choose how to display the user (default is BGG handle)",
                                   [""] + group_data[GROUP]["user_display_fields"],
                                   format_func=lambda x: x.title())
+USER_DISPLAY_FIELD2 = "user" if USER_DISPLAY_FIELD == "" else USER_DISPLAY_FIELD
 conn = st.connection(group_data[GROUP]["connection"], type=GSheetsConnection)
 
 if st.button("Refresh the cached data from BGG -- use sparingly!"):
@@ -50,10 +51,19 @@ try:
 except:
     st.warning("Unable to load cache. Try refreshing the cache?")
 
+if USER_DISPLAY_FIELD != "":
+    mapping = {k:v[USER_DISPLAY_FIELD] for d in group_data[GROUP]["users"] for k, v in d.items()}
+    df[USER_DISPLAY_FIELD] = df.user.map(mapping)
+
 st.subheader("Most Want to Play")
 col1, col2 = st.columns(2)
 OWNED_IS_WTP = col1.checkbox("Treat Owned as Want-to-Play?", value=True)
 WANT_IS_WTP = col2.checkbox("Treat Wishlist/Preordered as Want-to-Play?", value=True)
+SUBSET = st.multiselect("Choose a subset of users in the group",
+                        options=df[USER_DISPLAY_FIELD2].sort_values().unique())
+
+if len(SUBSET) > 0:
+    df = df.loc[df[USER_DISPLAY_FIELD].isin(SUBSET)]
 
 bool_cols = [
     "owned",
@@ -77,10 +87,6 @@ df = df.assign(
     ).astype(int),
 )
 
-if USER_DISPLAY_FIELD != "":
-    mapping = {k:v[USER_DISPLAY_FIELD] for d in group_data[GROUP]["users"] for k, v in d.items()}
-    df[USER_DISPLAY_FIELD] = df.user.map(mapping)
-
 remote_mapping = {k:v.get("remote", False) for d in group_data[GROUP]["users"] for k, v in d.items()}
 df["remote"] = df.user.map(remote_mapping)
 wtp_summary = (
@@ -93,7 +99,6 @@ wtp_summary = (
     )
     .sort_values("want_to_play", ascending=False)
 )
-USER_DISPLAY_FIELD2 = "user" if USER_DISPLAY_FIELD == "" else USER_DISPLAY_FIELD
 wtp = df.loc[(df.wtp == 1) & ~(df.remote)].groupby("gameid")[USER_DISPLAY_FIELD2].apply(list)
 wtp.name = "Who wants to play?"
 owners = df.loc[(df.owned_bool) & ~(df.remote)].groupby("gameid")[USER_DISPLAY_FIELD2].apply(list)
