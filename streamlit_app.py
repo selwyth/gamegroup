@@ -7,6 +7,7 @@ from boardgamegeek import BGGClient
 from boardgamegeek.cache import CacheBackendMemory
 from streamlit_gsheets import GSheetsConnection
 
+st.set_page_config(layout="wide")
 st.title("Game Group Analyzer")
 with open("groups.yaml", "r") as f:
     group_data = yaml.safe_load(f)
