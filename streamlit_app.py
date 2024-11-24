@@ -64,7 +64,7 @@ SUBSET = st.multiselect("Choose a subset of users in the group",
                         options=df[USER_DISPLAY_FIELD2].sort_values().unique())
 
 if len(SUBSET) > 0:
-    df = df.loc[df[USER_DISPLAY_FIELD].isin(SUBSET)]
+    df = df.loc[df[USER_DISPLAY_FIELD2].isin(SUBSET)]
 
 bool_cols = [
     "owned",
