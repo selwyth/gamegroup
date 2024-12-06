@@ -5,6 +5,7 @@ import yaml
 
 from boardgamegeek import BGGClient
 from boardgamegeek.cache import CacheBackendMemory
+from boardgamegeek.exceptions import BGGItemNotFoundError
 from streamlit_gsheets import GSheetsConnection
 
 st.set_page_config(layout="wide")
@@ -26,7 +27,12 @@ if st.button("Refresh the cached data from BGG -- use sparingly!"):
     for u in group_data[GROUP]["users"]:
         user = list(u.keys())[0]
         with st.spinner(f"Refreshing {user}"):
-            coll = bgg.collection(user)
+            try:
+                coll = bgg.collection(user)
+            except BGGItemNotFoundError as err:
+                st.text(f"{err}: {user}")
+                st.stop()
+                
             for game in coll:
                 record = dict(
                     user=user,
@@ -85,7 +91,7 @@ df = df.assign(
         + (OWNED_IS_WTP * df.owned_bool)
         + (WANT_IS_WTP * (df.want_bool + df.wishlist_bool + df.preordered_bool + df.want_to_buy_bool))
         + ((df.user == "selwyth") * (df.owned_bool))  # :)
-    ).astype(int),
+    ).astype(int)
 )
 
 remote_mapping = {k:v.get("remote", False) for d in group_data[GROUP]["users"] for k, v in d.items()}
